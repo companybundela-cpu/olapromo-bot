@@ -1,6 +1,6 @@
 import logging
 import re
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 # Logging setup
@@ -31,12 +31,24 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     phone_pattern = r'^[6-9]\d{9}$'
 
     if re.match(phone_pattern, user_text):
-        # User ko reply
+        # Interactive Buttons (Inline Keyboard)
+        keyboard = [
+            [InlineKeyboardButton("🌐 Visit Website", url="https://bundela247.com/")],
+            [InlineKeyboardButton("💬 Join WhatsApp Support", url="https://wa.me/message/UWIN3RSRLUJQE1")],
+            [InlineKeyboardButton("📢 Join Telegram Channel", url="https://t.me/BUNDELA247")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        # User ko reply with VIP Message & Buttons
         reply_text = (
-            "धन्यवाद! 🎮 आपका नंबर हमारे पास सुरक्षित दर्ज हो गया है। "
-            "हमारी टीम जल्द ही आपसे संपर्क करके आपका गेमिं ग अकाउंट चालू कर देगी। 👍"
+            "🏆 **Welcome to BUNDELA247 VIP** 🏆\n"
+            "India's Most Trusted & Premium Sports Community! ⚡\n\n"
+            "✅ 24x7 Superfast VIP Service\n"
+            "✅ 100% Safe & Secure Database\n\n"
+            "धन्यवाद! 🎮 आपका नंबर दर्ज हो गया है। हमारी टीम जल्द ही आपसे संपर्क करेगी। 👍\n\n"
+            "👇 **Get Your Premium VIP Access Now:**"
         )
-        await update.message.reply_text(reply_text)
+        await update.message.reply_text(reply_text, reply_markup=reply_markup, parse_mode='Markdown')
 
         # Admin (Aapko) direct notification message
         admin_alert = (
