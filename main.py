@@ -8,6 +8,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
+logger = logging.getLogger(__name__)
 
 # Admin Chat ID
 ADMIN_CHAT_ID = 7926478504
@@ -22,16 +23,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Phone number & message handler
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message or not update.message.text:
+        return
+
     user_text = update.message.text.strip()
     chat_id = update.effective_chat.id
     username = update.effective_user.username or "No Username"
     first_name = update.effective_user.first_name or ""
 
-    # 10-digit phone number check (Regex)
+    # Digits extract karein
+    clean_number = re.sub(r'\D', '', user_text)
+
+    # 10-digit check
     phone_pattern = r'^[6-9]\d{9}$'
 
-    if re.match(phone_pattern, user_text):
-        # Interactive Buttons (Inline Keyboard)
+    if re.match(phone_pattern, clean_number):
         keyboard = [
             [InlineKeyboardButton("🌐 Visit Website", url="https://bundela247.com/")],
             [InlineKeyboardButton("💬 Join WhatsApp Support", url="https://wa.me/message/UWIN3RSRLUJQE1")],
@@ -39,7 +45,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        # User ko reply with VIP Message & Buttons
         reply_text = (
             "🏆 **Welcome to BUNDELA247 VIP** 🏆\n"
             "India's Most Trusted & Premium Sports Community! ⚡\n\n"
@@ -50,12 +55,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         await update.message.reply_text(reply_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-        # Admin (Aapko) direct notification message
+        # Admin alert
         admin_alert = (
             f"🚀 **NEW LEAD CAPTURED!**\n\n"
             f"👤 **Name:** {first_name}\n"
             f"🆔 **Username:** @{username}\n"
-            f"📞 **Phone Number:** `{user_text}`\n"
+            f"📞 **Phone Number:** `{clean_number}`\n"
             f"💬 **Chat ID:** `{chat_id}`"
         )
         await context.bot.send_message(
@@ -64,21 +69,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode='Markdown'
         )
         
-        logging.info(f"NEW LEAD CAPTURED: Chat ID: {chat_id} | Phone: {user_text}")
+        logger.info(f"NEW LEAD CAPTURED: Chat ID: {chat_id} | Phone: {clean_number}")
 
     else:
-        # Invalid number format
-        error_text = "कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें (उदा. 9876543210): 👇"
-        await update.message.reply_text(error_text)
+        # Invalid format reply
+        error_text = (
+            "⚠️ **अमान्य मोबाइल नंबर!**\n\n"
+            "कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें (उदा. 9876543210): 👇"
+        )
+        await update.message.reply_text(error_text, parse_mode='Markdown')
+
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.error(msg="Exception handling update:", exc_info=context.error)
 
 if __name__ == '__main__':
-    # Naya Revoked Bot Token
     TOKEN = "8951896304:AAF8FGMhRKzmBVLmia7oLALvkEeVchsjtdY"
     
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
+    app.add_error_handler(error_handler)
 
     print("Bot is running...")
     app.run_polling()
