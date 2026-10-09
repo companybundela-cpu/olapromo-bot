@@ -9,7 +9,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-# Aapki Admin Chat ID
+# Admin Chat ID
 ADMIN_CHAT_ID = 7926478504
 
 # /start command handler
@@ -72,8 +72,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(error_text)
 
 if __name__ == '__main__':
-    # Bot Token
-    TOKEN = "8951896304:AAESNXbtBWTAZpd7RdbBJ4gsSvcZE_lxT3k"
+    # Naya Revoked Bot Token
+    TOKEN = "8951896304:AAF8FGMhRKzmBVLmia7oLALvkEeVchsjtdY"
     
     app = ApplicationBuilder().token(TOKEN).build()
 
