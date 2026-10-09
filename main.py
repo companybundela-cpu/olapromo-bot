@@ -16,7 +16,7 @@ ADMIN_CHAT_ID = 7926478504
 # /start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_text = (
-        "नमस्ते गेमर! 🎰 हमारे साथ अपना गेमिं ग अकाउंट बनाने के लिए "
+        "नमस्ते गेमर! 🎰 हमारे साथ अपना गेमिंग अकाउंट बनाने के लिए "
         "कृपया अपना 10 अंकों का मोबाइल नंबर यहाँ टाइप करके भेजें: 👇"
     )
     await update.message.reply_text(welcome_text)
